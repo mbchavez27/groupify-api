@@ -39,7 +39,7 @@ def run_pipeline(csv_path: str, text_column: str, num_houses: int):
     )
 
     # Save the output
-    output_filename = "clustered_members_output.csv"
+    output_filename = "output/" + "clustered_members_output.csv"
     final_df.to_csv(output_filename, index=False)
     print(f"\nPipeline Complete! Results saved to {output_filename}")
 
