@@ -45,7 +45,7 @@ def run_pipeline(csv_path: str, text_column: str, num_houses: int):
 
 
 if __name__ == "__main__":
-    TARGET_CSV = "lscs_members.csv"
+    TARGET_CSV = "data/" + "lscs_members.csv"
     COLUMN_NAME = "interests"
     NUMBER_OF_HOUSES = 10
 
