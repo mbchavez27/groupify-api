@@ -33,12 +33,10 @@ def run_pipeline(csv_path: str, text_column: str, num_clusters: int):
     print("6. Assigning members to clusters (Load Balancing)...")
     final_df = assign_members(processed_df, embedding_model, kmeans, max_diff=20)
 
-    # Add the descriptive labels back into the dataframe for easy reading
     final_df["cluster_label"] = final_df["assigned_cluster"].apply(
         lambda x: ", ".join(house_labels.get(x, []))
     )
 
-    # Save the output
     output_filename = "output/" + "clustered_members_output.csv"
     final_df.to_csv(output_filename, index=False)
     print(f"\nPipeline Complete! Results saved to {output_filename}")
