@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import io
 
-# Import your existing modular services
 from services.nlp_processor import setup_nltk, prepare_dataframe
 from services.ml_model import (
     cluster_unique_words,
@@ -13,16 +12,14 @@ from services.ml_model import (
 )
 from services.matchmaker import assign_members
 
-# Initialize the API
 app = FastAPI(
     title="Matchmaking Clustering API",
     description="API for load-balanced matchmaking.",
 )
 
-# Allow React frontend to talk to this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update this to your frontend domain in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,7 +45,6 @@ async def cluster_data(
         raise HTTPException(status_code=400, detail="Only CSV files are allowed.")
 
     try:
-        # 1. Read the uploaded file directly from memory into Pandas
         contents = await file.read()
         dataset = pd.read_csv(
             io.StringIO(contents.decode("utf-8")), on_bad_lines="warn"
@@ -59,7 +55,6 @@ async def cluster_data(
                 status_code=400, detail=f"Column '{text_column}' not found in CSV."
             )
 
-        # 2. Run the exact same pipeline steps you use in main.py
         processed_df, unique_keywords_df = prepare_dataframe(dataset, text_column)
 
         kmeans, word_embeddings, clustered_words_df = cluster_unique_words(
@@ -78,14 +73,11 @@ async def cluster_data(
             lambda x: ", ".join(house_labels.get(x, []))
         )
 
-        # 3. Convert the resulting dataframe back into a CSV in memory
         stream = io.StringIO()
         final_df.to_csv(stream, index=False)
 
-        # Transform the string stream into a byte stream for web transmission
         response_stream = io.BytesIO(stream.getvalue().encode("utf-8"))
 
-        # 4. Stream the file back to the user's browser as a downloadable attachment
         return StreamingResponse(
             response_stream,
             media_type="text/csv",
